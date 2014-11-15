@@ -37,12 +37,12 @@
             this.stopSending = new System.Windows.Forms.Panel();
             this.button3 = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.username = new System.Windows.Forms.TextBox();
-            this.password = new System.Windows.Forms.TextBox();
-            this.button4 = new System.Windows.Forms.Button();
             this.loginErrorLabel = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
+            this.button4 = new System.Windows.Forms.Button();
+            this.password = new System.Windows.Forms.TextBox();
+            this.username = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
             this.sendingPanel.SuspendLayout();
             this.startSending.SuspendLayout();
             this.stopSending.SuspendLayout();
@@ -137,6 +137,15 @@
             this.panel1.Size = new System.Drawing.Size(283, 97);
             this.panel1.TabIndex = 0;
             // 
+            // loginErrorLabel
+            // 
+            this.loginErrorLabel.Location = new System.Drawing.Point(43, 80);
+            this.loginErrorLabel.Name = "loginErrorLabel";
+            this.loginErrorLabel.Size = new System.Drawing.Size(208, 13);
+            this.loginErrorLabel.TabIndex = 5;
+            this.loginErrorLabel.Text = "Erro ao logar. Usuário ou senha incorretos.";
+            this.loginErrorLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
             // label1
             // 
             this.label1.AutoSize = true;
@@ -145,30 +154,6 @@
             this.label1.Size = new System.Drawing.Size(46, 13);
             this.label1.TabIndex = 0;
             this.label1.Text = "Usuário:";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(21, 33);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(41, 13);
-            this.label2.TabIndex = 1;
-            this.label2.Text = "Senha:";
-            // 
-            // username
-            // 
-            this.username.Location = new System.Drawing.Point(68, 4);
-            this.username.Name = "username";
-            this.username.Size = new System.Drawing.Size(202, 20);
-            this.username.TabIndex = 2;
-            // 
-            // password
-            // 
-            this.password.Location = new System.Drawing.Point(68, 30);
-            this.password.Name = "password";
-            this.password.Size = new System.Drawing.Size(202, 20);
-            this.password.TabIndex = 3;
-            this.password.UseSystemPasswordChar = true;
             // 
             // button4
             // 
@@ -180,14 +165,29 @@
             this.button4.UseVisualStyleBackColor = true;
             this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
-            // loginErrorLabel
+            // password
             // 
-            this.loginErrorLabel.AutoSize = true;
-            this.loginErrorLabel.Location = new System.Drawing.Point(43, 80);
-            this.loginErrorLabel.Name = "loginErrorLabel";
-            this.loginErrorLabel.Size = new System.Drawing.Size(208, 13);
-            this.loginErrorLabel.TabIndex = 5;
-            this.loginErrorLabel.Text = "Erro ao logar. Usuário ou senha incorretos.";
+            this.password.Location = new System.Drawing.Point(68, 30);
+            this.password.Name = "password";
+            this.password.Size = new System.Drawing.Size(202, 20);
+            this.password.TabIndex = 3;
+            this.password.UseSystemPasswordChar = true;
+            // 
+            // username
+            // 
+            this.username.Location = new System.Drawing.Point(68, 4);
+            this.username.Name = "username";
+            this.username.Size = new System.Drawing.Size(202, 20);
+            this.username.TabIndex = 2;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(21, 33);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(41, 13);
+            this.label2.TabIndex = 1;
+            this.label2.Text = "Senha:";
             // 
             // Form1
             // 

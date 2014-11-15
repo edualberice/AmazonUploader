@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
@@ -9,7 +11,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Threading;
-using System.ComponentModel;
+using System.Net;
+using System.Security.Cryptography;
 using Amazon;
 using Amazon.S3;
 using Amazon.S3.Transfer;
@@ -26,9 +29,10 @@ namespace ODTGed_Uploader
 
         private bool keepAlive = true;
         private List<string> files = new List<string>();
-        private int totalProgress = 0;
         private Thread sendFiles = null;
         private Thread loginProcess = null;
+        private string hashKey = "ODT SOLUÇÕES EmpresariAIS";
+        private string httpFunc = "";
 
         private void button1_Click(object sender, EventArgs e)
         {
@@ -202,15 +206,143 @@ namespace ODTGed_Uploader
             this.keepAlive = false;
         }
 
-        private void proccessLogin()
-        {
-            string user = username.Text;
-            string pass = password.Text;
-        }
-
         private void button4_Click(object sender, EventArgs e)
         {
             this.loginProcess = new Thread(new ThreadStart(proccessLogin));
+            this.loginProcess.IsBackground = true;
+            this.loginProcess.Start();
+        }
+
+        private void proccessLogin()
+        {
+            this.httpFunc = "LGN";
+
+            if (loginErrorLabel.InvokeRequired)
+            {
+                loginErrorLabel.Invoke(new MethodInvoker(delegate { loginErrorLabel.Text = "Autenticando usuário"; }));
+            }
+
+            string user = username.Text;
+            string pass = password.Text;
+
+            byte[] keyBytes = Encoding.UTF8.GetBytes(this.hashKey);
+            byte[] passBytes = Encoding.UTF8.GetBytes(pass);
+
+            var md5 = new HMACMD5(keyBytes);
+            byte[] hashedBytesPass = md5.ComputeHash(passBytes);
+            string md5Pass = BitConverter.ToString(hashedBytesPass).Replace("-", "").ToLower();
+
+            Dictionary<string, string> fields = new Dictionary<string, string>();
+            fields.Add("FNC", this.httpFunc);
+            fields.Add("USR", user);
+            fields.Add("PWD", md5Pass);
+
+            string json = this.generateJson(fields);
+
+            string randomKey = this.randomString(32);
+            string randomIV = this.randomString(32);
+
+            string encryptedData = this.encryptRJ256(json, randomKey, randomIV);
+            encryptedData += randomIV;
+
+            Dictionary<string, string> sendData = new Dictionary<string, string>();
+            sendData.Add("CTT", encryptedData);
+
+            this.httpPostData(sendData);
+        }
+
+        private string generateJson(Dictionary<string, string> fields)
+        {
+            var entries = fields.Select(d =>
+                string.Format("\"{0}\":\"{1}\"", d.Key, string.Join(",", d.Value)));
+            string json = "{" + string.Join(",", entries) + "}";
+
+            return json;
+        }
+
+        private string encryptRJ256(string target, string key, string iv)
+        {
+            var rijndael = new RijndaelManaged()
+            {
+                Padding = PaddingMode.Zeros,
+                Mode = CipherMode.CBC,
+                KeySize = 256,
+                BlockSize = 256
+            };
+
+            var bytesKey = Encoding.ASCII.GetBytes(key);
+            var bytesIv = Encoding.ASCII.GetBytes(iv);
+
+            var encryptor = rijndael.CreateEncryptor(bytesKey, bytesIv);
+
+            var msEncrypt = new MemoryStream();
+            var csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write);
+
+            var toEncrypt = Encoding.ASCII.GetBytes(target);
+
+            csEncrypt.Write(toEncrypt, 0, toEncrypt.Length);
+            csEncrypt.FlushFinalBlock();
+
+            var encrypted = msEncrypt.ToArray();
+            return Convert.ToBase64String(encrypted);
+        }
+
+        private String randomString(int size)
+        {
+            Random random = new Random((int)DateTime.Now.Ticks);
+            StringBuilder b = new StringBuilder();
+            char ch;
+            for(int i = 0; i < size; i++)
+            {
+                ch = Convert.ToChar(Convert.ToInt32(Math.Floor(26 * random.NextDouble() + 65)));
+                b.Append(ch);
+            }
+
+            return b.ToString();
+        }
+
+        private void httpPostData(Dictionary<string, string> data)
+        {
+            bool done = true;
+            var httpData = new NameValueCollection();
+            foreach(KeyValuePair<string, string> field in data)
+            {
+                httpData[field.Key] = field.Value;
+            }
+
+            using(var wb = new WebClient())
+            {
+                //*** O gateway de envio dos dados deve vir do banco local
+                var response = wb.UploadValues("http://www.odtsolucoes.com/t/", "POST", httpData);
+                string webResponse = System.Text.Encoding.UTF8.GetString(response);
+
+                if(!webResponse.Equals("OK"))
+                {
+                    this.treatHttpError(webResponse);
+                }
+            }
+        }
+
+        private void treatHttpError(string webResponse)
+        {
+            string message = "";
+
+            if(this.httpFunc.Equals("LGN"))
+            {
+                if(webResponse.Equals("INV"))
+                {
+                    message = "Usuário ou senha inválidos";
+                }
+                else
+                {
+                    message = "Erro na comunicação com o servidor(ERRO 2)";
+                }
+
+                if(loginErrorLabel.InvokeRequired)
+                {
+                    loginErrorLabel.Invoke(new MethodInvoker(delegate { loginErrorLabel.Text = message; }));
+                }
+            }
         }
     }
 }
