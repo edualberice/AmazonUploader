@@ -36,7 +36,7 @@
             this.button2 = new System.Windows.Forms.Button();
             this.stopSending = new System.Windows.Forms.Panel();
             this.button3 = new System.Windows.Forms.Button();
-            this.panel1 = new System.Windows.Forms.Panel();
+            this.loginPanel = new System.Windows.Forms.Panel();
             this.loginErrorLabel = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.button4 = new System.Windows.Forms.Button();
@@ -46,7 +46,7 @@
             this.sendingPanel.SuspendLayout();
             this.startSending.SuspendLayout();
             this.stopSending.SuspendLayout();
-            this.panel1.SuspendLayout();
+            this.loginPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // button1
@@ -89,7 +89,7 @@
             // 
             this.startSending.Controls.Add(this.button2);
             this.startSending.Controls.Add(this.button1);
-            this.startSending.Location = new System.Drawing.Point(1, 119);
+            this.startSending.Location = new System.Drawing.Point(0, 0);
             this.startSending.Name = "startSending";
             this.startSending.Size = new System.Drawing.Size(283, 30);
             this.startSending.TabIndex = 3;
@@ -108,6 +108,7 @@
             // stopSending
             // 
             this.stopSending.Controls.Add(this.button3);
+            this.stopSending.Controls.Add(this.startSending);
             this.stopSending.Location = new System.Drawing.Point(1, 119);
             this.stopSending.Name = "stopSending";
             this.stopSending.Size = new System.Drawing.Size(283, 30);
@@ -124,18 +125,18 @@
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
-            // panel1
+            // loginPanel
             // 
-            this.panel1.Controls.Add(this.loginErrorLabel);
-            this.panel1.Controls.Add(this.label1);
-            this.panel1.Controls.Add(this.button4);
-            this.panel1.Controls.Add(this.password);
-            this.panel1.Controls.Add(this.username);
-            this.panel1.Controls.Add(this.label2);
-            this.panel1.Location = new System.Drawing.Point(1, 52);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(283, 97);
-            this.panel1.TabIndex = 0;
+            this.loginPanel.Controls.Add(this.loginErrorLabel);
+            this.loginPanel.Controls.Add(this.label1);
+            this.loginPanel.Controls.Add(this.button4);
+            this.loginPanel.Controls.Add(this.password);
+            this.loginPanel.Controls.Add(this.username);
+            this.loginPanel.Controls.Add(this.label2);
+            this.loginPanel.Location = new System.Drawing.Point(1, 52);
+            this.loginPanel.Name = "loginPanel";
+            this.loginPanel.Size = new System.Drawing.Size(283, 97);
+            this.loginPanel.TabIndex = 0;
             // 
             // loginErrorLabel
             // 
@@ -193,10 +194,9 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(285, 154);
-            this.Controls.Add(this.panel1);
+            this.ClientSize = new System.Drawing.Size(288, 154);
+            this.Controls.Add(this.loginPanel);
             this.Controls.Add(this.sendingPanel);
-            this.Controls.Add(this.startSending);
             this.Controls.Add(this.stopSending);
             this.Name = "Form1";
             this.Text = "ODTDrive Uploader";
@@ -204,8 +204,8 @@
             this.sendingPanel.PerformLayout();
             this.startSending.ResumeLayout(false);
             this.stopSending.ResumeLayout(false);
-            this.panel1.ResumeLayout(false);
-            this.panel1.PerformLayout();
+            this.loginPanel.ResumeLayout(false);
+            this.loginPanel.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -220,7 +220,7 @@
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Panel stopSending;
         private System.Windows.Forms.Button button3;
-        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Panel loginPanel;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.TextBox password;

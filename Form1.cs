@@ -33,6 +33,7 @@ namespace ODTGed_Uploader
         private Thread loginProcess = null;
         private string hashKey = "ODT SOLUÇÕES EmpresariAIS";
         private string httpFunc = "";
+        private User userData = null;
 
         private void button1_Click(object sender, EventArgs e)
         {
@@ -239,16 +240,26 @@ namespace ODTGed_Uploader
 
             string json = this.generateJson(fields);
 
-            string randomKey = this.randomString(32);
-            string randomIV = this.randomString(32);
+            string randomKey = Cryptography.randomString(32);
+            string randomIV = Cryptography.randomString(32);
 
-            string encryptedData = this.encryptRJ256(json, randomKey, randomIV);
+            string encryptedData = Cryptography.encryptRJ256(json, randomKey, randomIV);
+            encryptedData += randomKey;
             encryptedData += randomIV;
 
             Dictionary<string, string> sendData = new Dictionary<string, string>();
             sendData.Add("CTT", encryptedData);
 
-            this.httpPostData(sendData);
+            string webResponse = this.httpPostData(sendData);
+
+            if (webResponse.Length <= 6)
+            {
+                this.treatHttpError(webResponse);
+            }
+            else
+            {
+                this.performLogin(webResponse);
+            }
         }
 
         private string generateJson(Dictionary<string, string> fields)
@@ -260,50 +271,8 @@ namespace ODTGed_Uploader
             return json;
         }
 
-        private string encryptRJ256(string target, string key, string iv)
+        private string httpPostData(Dictionary<string, string> data)
         {
-            var rijndael = new RijndaelManaged()
-            {
-                Padding = PaddingMode.Zeros,
-                Mode = CipherMode.CBC,
-                KeySize = 256,
-                BlockSize = 256
-            };
-
-            var bytesKey = Encoding.ASCII.GetBytes(key);
-            var bytesIv = Encoding.ASCII.GetBytes(iv);
-
-            var encryptor = rijndael.CreateEncryptor(bytesKey, bytesIv);
-
-            var msEncrypt = new MemoryStream();
-            var csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write);
-
-            var toEncrypt = Encoding.ASCII.GetBytes(target);
-
-            csEncrypt.Write(toEncrypt, 0, toEncrypt.Length);
-            csEncrypt.FlushFinalBlock();
-
-            var encrypted = msEncrypt.ToArray();
-            return Convert.ToBase64String(encrypted);
-        }
-
-        private String randomString(int size)
-        {
-            Random random = new Random((int)DateTime.Now.Ticks);
-            StringBuilder b = new StringBuilder();
-            char ch;
-            for(int i = 0; i < size; i++)
-            {
-                ch = Convert.ToChar(Convert.ToInt32(Math.Floor(26 * random.NextDouble() + 65)));
-                b.Append(ch);
-            }
-
-            return b.ToString();
-        }
-
-        private void httpPostData(Dictionary<string, string> data)
-        {
-            bool done = true;
             var httpData = new NameValueCollection();
             foreach(KeyValuePair<string, string> field in data)
             {
@@ -313,13 +282,19 @@ namespace ODTGed_Uploader
             using(var wb = new WebClient())
             {
                 //*** O gateway de envio dos dados deve vir do banco local
-                var response = wb.UploadValues("http://www.odtsolucoes.com/t/", "POST", httpData);
-                string webResponse = System.Text.Encoding.UTF8.GetString(response);
-
-                if(!webResponse.Equals("OK"))
+                try
                 {
-                    this.treatHttpError(webResponse);
+                    var response = wb.UploadValues("http://www.odtsolucoes.com/odtged/api/consult/", "POST", httpData);
+                    string webResponse = System.Text.Encoding.UTF8.GetString(response);
+
+                    return webResponse;
                 }
+                catch (Exception e)
+                {
+                    //return "ERR6";
+                    return e.Message;
+                }
+
             }
         }
 
@@ -342,6 +317,117 @@ namespace ODTGed_Uploader
                 {
                     loginErrorLabel.Invoke(new MethodInvoker(delegate { loginErrorLabel.Text = message; }));
                 }
+            }
+        }
+
+        private void performLogin(string response)
+        {
+            string encryptedData = "";
+            string key = response.Substring(0, 32);
+            string iv = response.Substring(response.Length - 32);
+
+            int keyIndex = response.IndexOf(key);
+            encryptedData = response.Remove(keyIndex, key.Length);
+
+            int ivIndex = encryptedData.IndexOf(iv);
+            encryptedData = encryptedData.Remove(ivIndex, iv.Length);
+
+            string data = Cryptography.decryptRJ256(encryptedData, key, iv);
+            this.userData = JSON.decodeUser(data);
+
+            if(this.userData.roles["write"])
+            {
+                this.checkUpdates();
+            }
+            else
+            {
+                if(loginErrorLabel.InvokeRequired)
+                {
+                    loginErrorLabel.Invoke(new MethodInvoker(delegate { loginErrorLabel.Text = "Usuário sem permissão de uso"; }));
+                }
+            }
+        }
+
+        private void checkUpdates()
+        {
+            bool error = false;
+            if (loginErrorLabel.InvokeRequired)
+            {
+                loginErrorLabel.Invoke(new MethodInvoker(delegate { loginErrorLabel.Text = "Buscando atualizações"; }));
+            }
+
+            //*** Última data de atualização deve vir do banco local
+            if (20140105105932145 != this.userData.contract.lastModified)
+            {
+                string json = JSON.getContractUpdate(this.userData.token);
+                string key = Cryptography.randomString(32);
+                string iv = Cryptography.randomString(32);
+
+                string encryptedContent = Cryptography.encryptRJ256(json, key, iv);
+                string sendData = encryptedContent + key + iv;
+
+                Dictionary<string, string> data = new Dictionary<string, string>();
+                data.Add("CTT", sendData);
+
+                string webResponse = this.httpPostData(data);
+
+                if (webResponse.Length <= 6)
+                {
+                    error = true;
+                    this.treatHttpError(webResponse);
+                }
+                else
+                {
+                    this.updateContractData(webResponse);
+                }
+            }
+            else
+            {
+                //Carregar dados do contrato do banco
+            }
+
+            if(!error)
+                this.showMainScreen();
+        }
+
+        private void updateContractData(string response)
+        {
+            if (loginErrorLabel.InvokeRequired)
+            {
+                loginErrorLabel.Invoke(new MethodInvoker(delegate { loginErrorLabel.Text = "Atualizando dados do contrato"; }));
+            }
+
+            string encryptedData = "";
+            string key = response.Substring(0, 32);
+            string iv = response.Substring(response.Length - 32);
+
+            int keyIndex = response.IndexOf(key);
+            encryptedData = response.Remove(keyIndex, key.Length);
+
+            int ivIndex = encryptedData.IndexOf(iv);
+            encryptedData = encryptedData.Remove(ivIndex, iv.Length);
+
+            string data = Cryptography.decryptRJ256(encryptedData, key, iv);
+            Contract contract = new Contract();
+            contract = JSON.decodeContract(data);
+
+            contract.contractId = this.userData.contract.contractId;
+            contract.lastModified = this.userData.contract.lastModified;
+
+            this.userData.contract = contract;
+            this.userData.contract.saveContract();
+        }
+
+        private void showMainScreen()
+        {
+            if(loginPanel.InvokeRequired)
+            {
+                loginPanel.Invoke(new MethodInvoker(delegate { loginPanel.TabIndex = 25; loginPanel.Visible = false; }));
+            }
+
+            if(startSending.InvokeRequired)
+            {
+                startSending.Invoke(new MethodInvoker(delegate { startSending.TabIndex = 0; startSending.Visible = true; }));
             }
         }
     }
