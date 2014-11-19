@@ -26,7 +26,6 @@ namespace ODTGed_Uploader
             InitializeComponent();
             loginErrorLabel.Text = "";
         }
-
         private bool keepAlive = true;
         private List<string> files = new List<string>();
         private Thread sendFiles = null;
@@ -124,11 +123,6 @@ namespace ODTGed_Uploader
 
             int currentProgress = 0;
 
-            if (button3.InvokeRequired)
-            {
-                button3.Invoke(new MethodInvoker(delegate { button3.Enabled = false; }));
-            }
-
             foreach(String file in this.files)
             {
                 if (sendFileLabel.InvokeRequired)
@@ -165,7 +159,7 @@ namespace ODTGed_Uploader
                 }
                 catch (Exception exception)
                 {
-                    //Something went wrong
+                    this.updateDialogLabel("Erro ao enviar o arquivo para nuvem");
                 }
 
                 try
@@ -182,8 +176,11 @@ namespace ODTGed_Uploader
                 } 
                 catch(Exception e)
                 {
-                    //Could not move the files
+                    this.updateDialogLabel("Impossível mover o arquivo para a pasta destino");
                 }
+
+                if (!keepAlive)
+                    break;
             }
 
             if(sendFileLabel.InvokeRequired)
@@ -205,6 +202,10 @@ namespace ODTGed_Uploader
         private void button3_Click(object sender, EventArgs e)
         {
             this.keepAlive = false;
+            if(button3.InvokeRequired)
+            {
+                button3.Invoke(new MethodInvoker(delegate { button3.Enabled = false; }));
+            }
         }
 
         private void button4_Click(object sender, EventArgs e)
@@ -250,11 +251,13 @@ namespace ODTGed_Uploader
             Dictionary<string, string> sendData = new Dictionary<string, string>();
             sendData.Add("CTT", encryptedData);
 
-            string webResponse = this.httpPostData(sendData);
+            //*** A URL de comunicação deve vir da base local
+            string webResponse = HttpComm.httpPostData(sendData, "http://www.odtsolucoes.com/odtged/api/consult/");
 
             if (webResponse.Length <= 6)
             {
-                this.treatHttpError(webResponse);
+               string message = HttpComm.treatHttpError(webResponse, this.httpFunc);
+               this.updateDialogLabel(message);
             }
             else
             {
@@ -271,57 +274,9 @@ namespace ODTGed_Uploader
             return json;
         }
 
-        private string httpPostData(Dictionary<string, string> data)
-        {
-            var httpData = new NameValueCollection();
-            foreach(KeyValuePair<string, string> field in data)
-            {
-                httpData[field.Key] = field.Value;
-            }
-
-            using(var wb = new WebClient())
-            {
-                //*** O gateway de envio dos dados deve vir do banco local
-                try
-                {
-                    var response = wb.UploadValues("http://www.odtsolucoes.com/odtged/api/consult/", "POST", httpData);
-                    string webResponse = System.Text.Encoding.UTF8.GetString(response);
-
-                    return webResponse;
-                }
-                catch (Exception e)
-                {
-                    //return "ERR6";
-                    return e.Message;
-                }
-
-            }
-        }
-
-        private void treatHttpError(string webResponse)
-        {
-            string message = "";
-
-            if(this.httpFunc.Equals("LGN"))
-            {
-                if(webResponse.Equals("INV"))
-                {
-                    message = "Usuário ou senha inválidos";
-                }
-                else
-                {
-                    message = "Erro na comunicação com o servidor(ERRO 2)";
-                }
-
-                if(loginErrorLabel.InvokeRequired)
-                {
-                    loginErrorLabel.Invoke(new MethodInvoker(delegate { loginErrorLabel.Text = message; }));
-                }
-            }
-        }
-
         private void performLogin(string response)
         {
+            string status = "";
             string encryptedData = "";
             string key = response.Substring(0, 32);
             string iv = response.Substring(response.Length - 32);
@@ -337,85 +292,38 @@ namespace ODTGed_Uploader
 
             if(this.userData.roles["write"])
             {
-                this.checkUpdates();
-            }
-            else
-            {
-                if(loginErrorLabel.InvokeRequired)
+                this.updateDialogLabel("Carregando contrato");
+
+                status = this.userData.contract.loadContract();
+                if(!status.Equals("OK"))
                 {
-                    loginErrorLabel.Invoke(new MethodInvoker(delegate { loginErrorLabel.Text = "Usuário sem permissão de uso"; }));
+                    if(status.Equals("NOTFOUND"))
+                    {
+                        this.updateDialogLabel("Não foi possível carregar os dados locais");
+                    }
+                    else if (status.Equals("ERROR"))
+                    {
+                        this.updateDialogLabel("Um erro ocorreu ao ler os dados do contrato");
+                    }
                 }
-            }
-        }
 
-        private void checkUpdates()
-        {
-            bool error = false;
-            if (loginErrorLabel.InvokeRequired)
-            {
-                loginErrorLabel.Invoke(new MethodInvoker(delegate { loginErrorLabel.Text = "Buscando atualizações"; }));
-            }
-
-            //*** Última data de atualização deve vir do banco local
-            if (20140105105932145 != this.userData.contract.lastModified)
-            {
-                string json = JSON.getContractUpdate(this.userData.token);
-                string key = Cryptography.randomString(32);
-                string iv = Cryptography.randomString(32);
-
-                string encryptedContent = Cryptography.encryptRJ256(json, key, iv);
-                string sendData = encryptedContent + key + iv;
-
-                Dictionary<string, string> data = new Dictionary<string, string>();
-                data.Add("CTT", sendData);
-
-                string webResponse = this.httpPostData(data);
-
-                if (webResponse.Length <= 6)
+                if (status.Equals("OK"))
                 {
-                    error = true;
-                    this.treatHttpError(webResponse);
-                }
-                else
-                {
-                    this.updateContractData(webResponse);
+                    this.updateDialogLabel("Buscando atualizações");
+
+                    //*** A URL deve vir da base local
+                    status = this.userData.contract.getUpdates(this.userData.token, "http://www.odtsolucoes.com/odtged/api/consult/");
+
+                    if (status.Equals("OK"))
+                        this.showMainScreen();
+                    else
+                        this.updateDialogLabel("");
                 }
             }
             else
             {
-                //Carregar dados do contrato do banco
+                this.updateDialogLabel("Usuário sem permissão de uso");
             }
-
-            if(!error)
-                this.showMainScreen();
-        }
-
-        private void updateContractData(string response)
-        {
-            if (loginErrorLabel.InvokeRequired)
-            {
-                loginErrorLabel.Invoke(new MethodInvoker(delegate { loginErrorLabel.Text = "Atualizando dados do contrato"; }));
-            }
-
-            string encryptedData = "";
-            string key = response.Substring(0, 32);
-            string iv = response.Substring(response.Length - 32);
-
-            int keyIndex = response.IndexOf(key);
-            encryptedData = response.Remove(keyIndex, key.Length);
-
-            int ivIndex = encryptedData.IndexOf(iv);
-            encryptedData = encryptedData.Remove(ivIndex, iv.Length);
-
-            string data = Cryptography.decryptRJ256(encryptedData, key, iv);
-            Contract contract = new Contract();
-            contract = JSON.decodeContract(data);
-
-            contract.contractId = this.userData.contract.contractId;
-            contract.lastModified = this.userData.contract.lastModified;
-
-            this.userData.contract = contract;
-            this.userData.contract.saveContract();
         }
 
         private void showMainScreen()
@@ -425,9 +333,22 @@ namespace ODTGed_Uploader
                 loginPanel.Invoke(new MethodInvoker(delegate { loginPanel.TabIndex = 25; loginPanel.Visible = false; }));
             }
 
+            if (helloLabel.InvokeRequired)
+            {
+                helloLabel.Invoke(new MethodInvoker(delegate { helloLabel.Text = "Olá " + this.userData.firstName + " " + this.userData.lastName+"!"; }));
+            }
+
             if(startSending.InvokeRequired)
             {
                 startSending.Invoke(new MethodInvoker(delegate { startSending.TabIndex = 0; startSending.Visible = true; }));
+            }
+        }
+
+        private void updateDialogLabel(string error)
+        {
+            if(loginErrorLabel.InvokeRequired)
+            {
+                loginErrorLabel.Invoke(new MethodInvoker(delegate { loginErrorLabel.Text = error; }));
             }
         }
     }

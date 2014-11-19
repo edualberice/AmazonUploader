@@ -76,7 +76,7 @@ namespace ODTGed_Uploader
                 }
                 else if (uInfo[0].Equals("CLM"))
                 {
-                    contract.lastModified = Convert.ToDouble(uInfo[1]);
+                    contract.lastModifiedWeb = Convert.ToDouble(uInfo[1]);
                 }
             }
             user.contract = contract;

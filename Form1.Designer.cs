@@ -32,7 +32,6 @@
             this.sendFileProgress = new System.Windows.Forms.ProgressBar();
             this.sendingPanel = new System.Windows.Forms.Panel();
             this.sendFileLabel = new System.Windows.Forms.Label();
-            this.startSending = new System.Windows.Forms.Panel();
             this.button2 = new System.Windows.Forms.Button();
             this.stopSending = new System.Windows.Forms.Panel();
             this.button3 = new System.Windows.Forms.Button();
@@ -43,17 +42,20 @@
             this.password = new System.Windows.Forms.TextBox();
             this.username = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
+            this.startSending = new System.Windows.Forms.Panel();
+            this.helloLabel = new System.Windows.Forms.Label();
+            this.helloLabel2 = new System.Windows.Forms.Label();
             this.sendingPanel.SuspendLayout();
-            this.startSending.SuspendLayout();
             this.stopSending.SuspendLayout();
             this.loginPanel.SuspendLayout();
+            this.startSending.SuspendLayout();
             this.SuspendLayout();
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(11, 3);
+            this.button1.Location = new System.Drawing.Point(11, 42);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(126, 23);
+            this.button1.Size = new System.Drawing.Size(264, 23);
             this.button1.TabIndex = 0;
             this.button1.Text = "Enviar Arquivos";
             this.button1.UseVisualStyleBackColor = true;
@@ -85,21 +87,11 @@
             this.sendFileLabel.TabIndex = 2;
             this.sendFileLabel.Text = "label1";
             // 
-            // startSending
-            // 
-            this.startSending.Controls.Add(this.button2);
-            this.startSending.Controls.Add(this.button1);
-            this.startSending.Location = new System.Drawing.Point(0, 0);
-            this.startSending.Name = "startSending";
-            this.startSending.Size = new System.Drawing.Size(283, 30);
-            this.startSending.TabIndex = 3;
-            this.startSending.Visible = false;
-            // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(143, 3);
+            this.button2.Location = new System.Drawing.Point(11, 71);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(128, 23);
+            this.button2.Size = new System.Drawing.Size(264, 23);
             this.button2.TabIndex = 1;
             this.button2.Text = "Configurações";
             this.button2.UseVisualStyleBackColor = true;
@@ -108,7 +100,6 @@
             // stopSending
             // 
             this.stopSending.Controls.Add(this.button3);
-            this.stopSending.Controls.Add(this.startSending);
             this.stopSending.Location = new System.Drawing.Point(1, 119);
             this.stopSending.Name = "stopSending";
             this.stopSending.Size = new System.Drawing.Size(283, 30);
@@ -190,11 +181,42 @@
             this.label2.TabIndex = 1;
             this.label2.Text = "Senha:";
             // 
+            // startSending
+            // 
+            this.startSending.Controls.Add(this.helloLabel2);
+            this.startSending.Controls.Add(this.button2);
+            this.startSending.Controls.Add(this.helloLabel);
+            this.startSending.Controls.Add(this.button1);
+            this.startSending.Location = new System.Drawing.Point(1, 52);
+            this.startSending.Name = "startSending";
+            this.startSending.Size = new System.Drawing.Size(283, 97);
+            this.startSending.TabIndex = 4;
+            this.startSending.Visible = false;
+            // 
+            // helloLabel
+            // 
+            this.helloLabel.AutoSize = true;
+            this.helloLabel.Location = new System.Drawing.Point(16, 4);
+            this.helloLabel.Name = "helloLabel";
+            this.helloLabel.Size = new System.Drawing.Size(110, 13);
+            this.helloLabel.TabIndex = 5;
+            this.helloLabel.Text = "Olá Eduardo Alberice!";
+            // 
+            // helloLabel2
+            // 
+            this.helloLabel2.AutoSize = true;
+            this.helloLabel2.Location = new System.Drawing.Point(16, 22);
+            this.helloLabel2.Name = "helloLabel2";
+            this.helloLabel2.Size = new System.Drawing.Size(192, 13);
+            this.helloLabel2.TabIndex = 5;
+            this.helloLabel2.Text = "Seja bem-vindo ao ODTDrive Uploader";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(288, 154);
+            this.Controls.Add(this.startSending);
             this.Controls.Add(this.loginPanel);
             this.Controls.Add(this.sendingPanel);
             this.Controls.Add(this.stopSending);
@@ -202,10 +224,11 @@
             this.Text = "ODTDrive Uploader";
             this.sendingPanel.ResumeLayout(false);
             this.sendingPanel.PerformLayout();
-            this.startSending.ResumeLayout(false);
             this.stopSending.ResumeLayout(false);
             this.loginPanel.ResumeLayout(false);
             this.loginPanel.PerformLayout();
+            this.startSending.ResumeLayout(false);
+            this.startSending.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -216,7 +239,6 @@
         private System.Windows.Forms.ProgressBar sendFileProgress;
         private System.Windows.Forms.Panel sendingPanel;
         private System.Windows.Forms.Label sendFileLabel;
-        private System.Windows.Forms.Panel startSending;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Panel stopSending;
         private System.Windows.Forms.Button button3;
@@ -227,6 +249,9 @@
         private System.Windows.Forms.TextBox username;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label loginErrorLabel;
+        private System.Windows.Forms.Panel startSending;
+        private System.Windows.Forms.Label helloLabel2;
+        private System.Windows.Forms.Label helloLabel;
     }
 }
 
