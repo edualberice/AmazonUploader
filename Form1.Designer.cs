@@ -33,10 +33,10 @@
             this.button1 = new System.Windows.Forms.Button();
             this.sendFileProgress = new System.Windows.Forms.ProgressBar();
             this.sendingPanel = new System.Windows.Forms.Panel();
+            this.sendingStatus = new System.Windows.Forms.Label();
+            this.button3 = new System.Windows.Forms.Button();
             this.sendFileLabel = new System.Windows.Forms.Label();
             this.button2 = new System.Windows.Forms.Button();
-            this.stopSending = new System.Windows.Forms.Panel();
-            this.button3 = new System.Windows.Forms.Button();
             this.loginPanel = new System.Windows.Forms.Panel();
             this.loginErrorLabel = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
@@ -48,20 +48,21 @@
             this.helloLabel2 = new System.Windows.Forms.Label();
             this.helloLabel = new System.Windows.Forms.Label();
             this.configPanel = new System.Windows.Forms.Panel();
-            this.label3 = new System.Windows.Forms.Label();
-            this.localFiles = new System.Windows.Forms.TextBox();
-            this.label4 = new System.Windows.Forms.Label();
-            this.localTarget = new System.Windows.Forms.TextBox();
-            this.label5 = new System.Windows.Forms.Label();
-            this.cloudTarget = new System.Windows.Forms.TextBox();
-            this.button5 = new System.Windows.Forms.Button();
             this.button6 = new System.Windows.Forms.Button();
+            this.button5 = new System.Windows.Forms.Button();
+            this.cloudTarget = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.localTarget = new System.Windows.Forms.TextBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.localFiles = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
             this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.sendingPanel.SuspendLayout();
-            this.stopSending.SuspendLayout();
             this.loginPanel.SuspendLayout();
             this.startSending.SuspendLayout();
             this.configPanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // button1
@@ -76,20 +77,41 @@
             // 
             // sendFileProgress
             // 
-            this.sendFileProgress.Location = new System.Drawing.Point(11, 20);
+            this.sendFileProgress.Location = new System.Drawing.Point(11, 26);
             this.sendFileProgress.Name = "sendFileProgress";
-            this.sendFileProgress.Size = new System.Drawing.Size(260, 23);
+            this.sendFileProgress.Size = new System.Drawing.Size(260, 33);
             this.sendFileProgress.TabIndex = 1;
             // 
             // sendingPanel
             // 
+            this.sendingPanel.Controls.Add(this.sendingStatus);
+            this.sendingPanel.Controls.Add(this.button3);
             this.sendingPanel.Controls.Add(this.sendFileLabel);
             this.sendingPanel.Controls.Add(this.sendFileProgress);
             this.sendingPanel.Location = new System.Drawing.Point(1, 70);
             this.sendingPanel.Name = "sendingPanel";
-            this.sendingPanel.Size = new System.Drawing.Size(283, 46);
+            this.sendingPanel.Size = new System.Drawing.Size(283, 138);
             this.sendingPanel.TabIndex = 2;
             this.sendingPanel.Visible = false;
+            // 
+            // sendingStatus
+            // 
+            this.sendingStatus.AutoSize = true;
+            this.sendingStatus.Location = new System.Drawing.Point(11, 71);
+            this.sendingStatus.Name = "sendingStatus";
+            this.sendingStatus.Size = new System.Drawing.Size(99, 13);
+            this.sendingStatus.TabIndex = 7;
+            this.sendingStatus.Text = "Enviando arquivo...";
+            // 
+            // button3
+            // 
+            this.button3.Location = new System.Drawing.Point(11, 96);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(260, 33);
+            this.button3.TabIndex = 0;
+            this.button3.Text = "Interromper Envio";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
             // sendFileLabel
             // 
@@ -109,25 +131,6 @@
             this.button2.Text = "Configurações";
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
-            // 
-            // stopSending
-            // 
-            this.stopSending.Controls.Add(this.button3);
-            this.stopSending.Location = new System.Drawing.Point(1, 119);
-            this.stopSending.Name = "stopSending";
-            this.stopSending.Size = new System.Drawing.Size(283, 30);
-            this.stopSending.TabIndex = 1;
-            this.stopSending.Visible = false;
-            // 
-            // button3
-            // 
-            this.button3.Location = new System.Drawing.Point(11, 3);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(260, 23);
-            this.button3.TabIndex = 0;
-            this.button3.Text = "Interromper Envio";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
             // loginPanel
             // 
@@ -154,7 +157,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(16, 7);
+            this.label1.Location = new System.Drawing.Point(16, 18);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(46, 13);
             this.label1.TabIndex = 0;
@@ -162,9 +165,9 @@
             // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(100, 83);
+            this.button4.Location = new System.Drawing.Point(100, 80);
             this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(75, 23);
+            this.button4.Size = new System.Drawing.Size(75, 33);
             this.button4.TabIndex = 4;
             this.button4.Text = "Acessar";
             this.button4.UseVisualStyleBackColor = true;
@@ -172,7 +175,7 @@
             // 
             // password
             // 
-            this.password.Location = new System.Drawing.Point(68, 40);
+            this.password.Location = new System.Drawing.Point(68, 44);
             this.password.Name = "password";
             this.password.Size = new System.Drawing.Size(202, 20);
             this.password.TabIndex = 3;
@@ -180,7 +183,7 @@
             // 
             // username
             // 
-            this.username.Location = new System.Drawing.Point(68, 4);
+            this.username.Location = new System.Drawing.Point(68, 15);
             this.username.Name = "username";
             this.username.Size = new System.Drawing.Size(202, 20);
             this.username.TabIndex = 2;
@@ -188,7 +191,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(21, 43);
+            this.label2.Location = new System.Drawing.Point(21, 48);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(41, 13);
             this.label2.TabIndex = 1;
@@ -240,53 +243,15 @@
             this.configPanel.TabIndex = 5;
             this.configPanel.Visible = false;
             // 
-            // label3
+            // button6
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(3, 5);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(99, 13);
-            this.label3.TabIndex = 6;
-            this.label3.Text = "Local dos arquivos:";
-            // 
-            // localFiles
-            // 
-            this.localFiles.Location = new System.Drawing.Point(6, 21);
-            this.localFiles.Name = "localFiles";
-            this.localFiles.Size = new System.Drawing.Size(274, 20);
-            this.localFiles.TabIndex = 7;
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(3, 44);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(89, 13);
-            this.label4.TabIndex = 8;
-            this.label4.Text = "Pasta de destino:";
-            // 
-            // localTarget
-            // 
-            this.localTarget.Location = new System.Drawing.Point(6, 60);
-            this.localTarget.Name = "localTarget";
-            this.localTarget.Size = new System.Drawing.Size(274, 20);
-            this.localTarget.TabIndex = 9;
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(3, 83);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(204, 13);
-            this.label5.TabIndex = 10;
-            this.label5.Text = "Destino na nuvem(em branco para a raiz):";
-            // 
-            // cloudTarget
-            // 
-            this.cloudTarget.Location = new System.Drawing.Point(6, 99);
-            this.cloudTarget.Name = "cloudTarget";
-            this.cloudTarget.Size = new System.Drawing.Size(274, 20);
-            this.cloudTarget.TabIndex = 11;
+            this.button6.Location = new System.Drawing.Point(60, 124);
+            this.button6.Name = "button6";
+            this.button6.Size = new System.Drawing.Size(75, 23);
+            this.button6.TabIndex = 13;
+            this.button6.Text = "Voltar";
+            this.button6.UseVisualStyleBackColor = true;
+            this.button6.Click += new System.EventHandler(this.button6_Click);
             // 
             // button5
             // 
@@ -298,15 +263,53 @@
             this.button5.UseVisualStyleBackColor = true;
             this.button5.Click += new System.EventHandler(this.button5_Click);
             // 
-            // button6
+            // cloudTarget
             // 
-            this.button6.Location = new System.Drawing.Point(60, 124);
-            this.button6.Name = "button6";
-            this.button6.Size = new System.Drawing.Size(75, 23);
-            this.button6.TabIndex = 13;
-            this.button6.Text = "Voltar";
-            this.button6.UseVisualStyleBackColor = true;
-            this.button6.Click += new System.EventHandler(this.button6_Click);
+            this.cloudTarget.Location = new System.Drawing.Point(6, 99);
+            this.cloudTarget.Name = "cloudTarget";
+            this.cloudTarget.Size = new System.Drawing.Size(274, 20);
+            this.cloudTarget.TabIndex = 11;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(3, 83);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(204, 13);
+            this.label5.TabIndex = 10;
+            this.label5.Text = "Destino na nuvem(em branco para a raiz):";
+            // 
+            // localTarget
+            // 
+            this.localTarget.Location = new System.Drawing.Point(6, 60);
+            this.localTarget.Name = "localTarget";
+            this.localTarget.Size = new System.Drawing.Size(274, 20);
+            this.localTarget.TabIndex = 9;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(3, 44);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(89, 13);
+            this.label4.TabIndex = 8;
+            this.label4.Text = "Pasta de destino:";
+            // 
+            // localFiles
+            // 
+            this.localFiles.Location = new System.Drawing.Point(6, 21);
+            this.localFiles.Name = "localFiles";
+            this.localFiles.Size = new System.Drawing.Size(274, 20);
+            this.localFiles.TabIndex = 7;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(3, 5);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(99, 13);
+            this.label3.TabIndex = 6;
+            this.label3.Text = "Local dos arquivos:";
             // 
             // notifyIcon1
             // 
@@ -315,27 +318,37 @@
             this.notifyIcon1.Visible = true;
             this.notifyIcon1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.notifyIcon1_MouseDoubleClick);
             // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
+            this.pictureBox1.Location = new System.Drawing.Point(7, 4);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(273, 50);
+            this.pictureBox1.TabIndex = 6;
+            this.pictureBox1.TabStop = false;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(286, 211);
+            this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.startSending);
             this.Controls.Add(this.configPanel);
             this.Controls.Add(this.loginPanel);
             this.Controls.Add(this.sendingPanel);
-            this.Controls.Add(this.stopSending);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";
             this.Text = "ODTDrive Uploader";
             this.sendingPanel.ResumeLayout(false);
             this.sendingPanel.PerformLayout();
-            this.stopSending.ResumeLayout(false);
             this.loginPanel.ResumeLayout(false);
             this.loginPanel.PerformLayout();
             this.startSending.ResumeLayout(false);
             this.startSending.PerformLayout();
             this.configPanel.ResumeLayout(false);
             this.configPanel.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -347,7 +360,6 @@
         private System.Windows.Forms.Panel sendingPanel;
         private System.Windows.Forms.Label sendFileLabel;
         private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.Panel stopSending;
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Panel loginPanel;
         private System.Windows.Forms.Label label1;
@@ -369,6 +381,8 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button button6;
         private System.Windows.Forms.NotifyIcon notifyIcon1;
+        private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.Label sendingStatus;
     }
 }
 

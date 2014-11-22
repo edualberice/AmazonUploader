@@ -170,5 +170,27 @@ namespace ODTGed_Uploader
 
             return c;
         }
+
+        public static string encodeFileUploadLog(string action, string token, string uploadedKey)
+        {
+            return "{\"FNC\":\""+action+"\", \"TKN\":\""+token+"\", \"KEY\":\""+uploadedKey+"\"}";
+        }
+
+        public static string decodeUploadLog(string data)
+        {
+            string status = "OK";
+
+            data = data.Replace("\"", "");
+            data = data.Replace("{", "");
+            data = data.Replace("}", "");
+
+            string[] info = data.Split(':');
+            if (info[0].Equals("STT"))
+            {
+                status = info[1];
+            }
+
+            return status;
+        }
     }
 }

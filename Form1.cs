@@ -27,7 +27,7 @@ namespace ODTGed_Uploader
             loginErrorLabel.Text = "Digite o usuário e a senha e clique em Acessar";
             ShowInTaskbar = false;
             this.SizeChanged += Form1_SizeChanged;
-            notifyIcon1.Text = "ODTDrive Uploader";
+            notifyIcon1.Text = "ODTDrive Uploader"; 
         }
         private bool keepAlive = true;
         private List<string> files = new List<string>();
@@ -59,6 +59,8 @@ namespace ODTGed_Uploader
             {
                 this.files = new List<string>();
 
+                updateSendStatus("");
+
                 if (sendFileLabel.InvokeRequired)
                 {
                     sendFileLabel.Invoke(new MethodInvoker(delegate { sendFileLabel.Text = "Aguardando arquivos para enviar para a nuvem"; }));
@@ -74,11 +76,6 @@ namespace ODTGed_Uploader
                     startSending.Invoke(new MethodInvoker(delegate { startSending.Visible = false; }));
                 }
 
-                if(stopSending.InvokeRequired)
-                {
-                    stopSending.Invoke(new MethodInvoker(delegate { stopSending.Visible = true; }));
-                }
-
                 this.getAllFilesFromFolder();
                 if(this.files.Count > 0)
                     this.sendFilesToBucket();
@@ -89,11 +86,6 @@ namespace ODTGed_Uploader
             if(sendingPanel.InvokeRequired)
             {
                 sendingPanel.Invoke(new MethodInvoker(delegate { sendingPanel.Visible = false; }));
-            }
-
-            if(stopSending.InvokeRequired)
-            {
-                stopSending.Invoke(new MethodInvoker(delegate { stopSending.Visible = false; }));
             }
 
             if(startSending.InvokeRequired)
@@ -136,6 +128,8 @@ namespace ODTGed_Uploader
 
                 try
                 {
+                    updateSendStatus("Enviando arquivo...");
+
                     TransferUtilityUploadRequest fileTransferUtilityRequest = new TransferUtilityUploadRequest
                     {
                         BucketName = bucket,
@@ -151,6 +145,19 @@ namespace ODTGed_Uploader
                     }
 
                     fileTransferUtility.Upload(fileTransferUtilityRequest);
+
+                    updateSendStatus("Gerando log de envio");
+
+                    string status = HttpComm.newFileUploaded(this.userData.token, key, file, this.configs.consultGateway);
+
+                    if(status.Equals("OK"))
+                    {
+                        updateSendStatus("Arquivo enviado com sucesso");
+                    }
+                    else
+                    {
+                        updateSendStatus(status);
+                    }
 
                     filesSent++;
                     progress = filesSent / totalFiles * 100;
@@ -171,8 +178,8 @@ namespace ODTGed_Uploader
                     string[] filePath = file.Split('\\');
                     int last = filePath.Length - 1;
 
-                    string from = this.configs.sourceFolder + filePath[last];
-                    string to = this.configs.targetLocalFolder + filePath[last];
+                    string from = this.configs.sourceFolder + "\\" + filePath[last];
+                    string to = this.configs.targetLocalFolder + "\\" + filePath[last];
                     
                     File.Move(from, to);
                 } 
@@ -376,6 +383,14 @@ namespace ODTGed_Uploader
             if(loginErrorLabel.InvokeRequired)
             {
                 loginErrorLabel.Invoke(new MethodInvoker(delegate { loginErrorLabel.Text = error; }));
+            }
+        }
+
+        private void updateSendStatus(string status)
+        {
+            if (sendingStatus.InvokeRequired)
+            {
+                sendingStatus.Invoke(new MethodInvoker(delegate { sendingStatus.Text = status; }));
             }
         }
 

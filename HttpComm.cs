@@ -60,7 +60,65 @@ namespace ODTGed_Uploader
                 }
             }
 
+            if(func.Equals("NUF"))
+            {
+                if(webResponse.Equals("ERR7"))
+                {
+                    message = "ERRO 7 - Token de login inválido";
+                }
+                else if(webResponse.Equals("ERR8"))
+                {
+                    message = "ERRO 8 - Erro ao gerar log";
+                }
+            }
+
             return message;
+        }
+
+        public static string newFileUploaded(string token, string key, string file, string url)
+        {
+            string status = "OK";
+
+            string uploadedKey = "";
+
+            file = file.Replace("\\", "#");
+            string[] filePath = file.Split('#');
+
+            uploadedKey += key + "/" + filePath[filePath.Length - 1];
+
+            string json = JSON.encodeFileUploadLog("NUF", token, uploadedKey);
+            string encryptKey = Cryptography.randomString(32);
+            string encryptIv = Cryptography.randomString(32);
+
+            string encryptedContent = Cryptography.encryptRJ256(json, encryptKey, encryptIv);
+            string sendData = encryptedContent + encryptKey + encryptIv;
+
+            Dictionary<string, string> data = new Dictionary<string, string>();
+            data.Add("CTT", sendData);
+
+            string webResponse = HttpComm.httpPostData(data, url);
+
+            if (webResponse.Length <= 6)
+            {
+                status = HttpComm.treatHttpError(webResponse, "NUF");
+            }
+            else
+            {
+                string encryptedData = "";
+                string decodeKey = webResponse.Substring(0, 32);
+                string decodeIv = webResponse.Substring(webResponse.Length - 32);
+
+                int keyIndex = webResponse.IndexOf(decodeKey);
+                encryptedData = webResponse.Remove(keyIndex, decodeKey.Length);
+
+                int ivIndex = encryptedData.IndexOf(decodeIv);
+                encryptedData = encryptedData.Remove(ivIndex, decodeIv.Length);
+
+                string logData = Cryptography.decryptRJ256(encryptedData, decodeKey, decodeIv);
+                status = JSON.decodeUploadLog(logData);
+            }
+
+            return status;
         }
     }
 }
