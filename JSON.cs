@@ -86,8 +86,12 @@ namespace ODTGed_Uploader
 
         public static string getContractUpdate(string token)
         {
-            string json = "{\"FNC\":\"UCT\",\"TKN\":\"" + token + "\"}";
-            return json;
+            return "{\"FNC\":\"UCT\",\"TKN\":\"" + token + "\"}";
+        }
+
+        public static string getConfigUpdate(string token)
+        {
+            return "{\"FNC\":\"CCF\",\"TKN\":\"" + token + "\"}";
         }
 
         public static Contract decodeContract(string data)
@@ -131,6 +135,36 @@ namespace ODTGed_Uploader
                 else if (info[0].Equals("BKT"))
                 {
                     c.bucketName = info[1];
+                }
+            }
+
+            return c;
+        }
+    
+        public static Config decodeConfig(string data)
+        {
+            Config c = new Config();
+
+            data = data.Replace("\"", "");
+            data = data.Replace("{", "");
+            data = data.Replace("}", "");
+
+            string[] fields = data.Split(',');
+            foreach (string field in fields)
+            {
+                string[] info = field.Split(':');
+                if (info[0].Equals("TSL"))
+                {
+                    c.threadSleep = Convert.ToInt32(info[1]);
+                }
+                else if (info[0].Equals("GTW"))
+                {
+                    c.consultGateway = info[1]+":"+info[2];
+                    c.consultGateway = c.consultGateway.Replace("\\","");
+                }
+                else if (info[0].Equals("LMD"))
+                {
+                    c.lastModified = Convert.ToDouble(info[1]);
                 }
             }
 

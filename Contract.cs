@@ -21,7 +21,6 @@ namespace ODTGed_Uploader
 
         public void saveContract()
         {
-            //*** O nome do banco local deve vir das configurações
             string connString = "Data Source="+AppDomain.CurrentDomain.BaseDirectory+"odtdrive.db";
             using (SQLiteConnection conn = new SQLiteConnection(connString))
             {
@@ -73,7 +72,6 @@ namespace ODTGed_Uploader
             Dictionary<string, string> data = new Dictionary<string, string>();
             data.Add("CTT", sendData);
 
-            //*** A URL do gateway de comunicação deve vir do banco local
             string webResponse = HttpComm.httpPostData(data, url);
 
             if (webResponse.Length <= 6)
@@ -85,6 +83,10 @@ namespace ODTGed_Uploader
                 if (this.lastModified != this.lastModifiedWeb)
                 {
                     status = this.updateContractData(webResponse);
+                }
+                else
+                {
+                    status = "OK";
                 }
             }
             return status;

@@ -33,6 +33,7 @@ namespace ODTGed_Uploader
         private string hashKey = "ODT SOLUÇÕES EmpresariAIS";
         private string httpFunc = "";
         private User userData = null;
+        private Config configs = null;
 
         private void button1_Click(object sender, EventArgs e)
         {
@@ -78,8 +79,7 @@ namespace ODTGed_Uploader
                 if(this.files.Count > 0)
                     this.sendFilesToBucket();
 
-                //***O tempo de espera deve vir do banco de dados
-                System.Threading.Thread.Sleep(5000);
+                System.Threading.Thread.Sleep(this.configs.threadSleep);
             }
 
             if(sendingPanel.InvokeRequired)
@@ -102,8 +102,7 @@ namespace ODTGed_Uploader
 
         private void getAllFilesFromFolder()
         {
-            //*** O caminho da pasta deve vir do banco de dados
-            string[] filePaths = Directory.GetFiles("C:\\Teste");
+            string[] filePaths = Directory.GetFiles(this.configs.sourceFolder);
 
             foreach(string file in filePaths)
             {
@@ -113,9 +112,8 @@ namespace ODTGed_Uploader
 
         private void sendFilesToBucket()
         {
-            //*** O nome do balde deve vir do banco de dados, a key também, pois a pasta será pré-definida
-            string bucket = "odtbucket";
-            string key = "";
+            string bucket = this.userData.contract.bucketName;
+            string key = this.configs.targetCloudFolder.Equals(" ") ? "" : this.configs.targetCloudFolder;
 
             decimal progress = 0;
             decimal filesSent = 0;
@@ -136,16 +134,18 @@ namespace ODTGed_Uploader
                 {
                     TransferUtilityUploadRequest fileTransferUtilityRequest = new TransferUtilityUploadRequest
                     {
-                        //*** O nome do balde vem do banco de dados
                         BucketName = bucket,
                         FilePath = file,
                         StorageClass = S3StorageClass.Standard,
-                        //*** A key vem do banco de dados
                         Key = key,
                         CannedACL = S3CannedACL.Private,
-                        //*** Deve ser definido se haverá encriptação de acordo com o banco de dados
-                        ServerSideEncryptionMethod = ServerSideEncryptionMethod.AES256
                     };
+
+                    if(this.userData.contract.encryption > 0)
+                    {
+                        fileTransferUtilityRequest.ServerSideEncryptionMethod = ServerSideEncryptionMethod.AES256;
+                    }
+
                     fileTransferUtility.Upload(fileTransferUtilityRequest);
 
                     filesSent++;
@@ -167,10 +167,8 @@ namespace ODTGed_Uploader
                     string[] filePath = file.Split('\\');
                     int last = filePath.Length - 1;
 
-                    //*** FROM deve vir do banco de dados
-                    string from = @"C:\Teste\" + filePath[last];
-                    //*** TO deve vir do banco de dados
-                    string to = @"C:\Teste\Processados\" + filePath[last];
+                    string from = this.configs.sourceFolder + filePath[last];
+                    string to = this.configs.targetLocalFolder + filePath[last];
                     
                     File.Move(from, to);
                 } 
@@ -217,54 +215,66 @@ namespace ODTGed_Uploader
 
         private void proccessLogin()
         {
-            this.httpFunc = "LGN";
+            this.configs = new Config();
 
-            if (loginErrorLabel.InvokeRequired)
+            this.updateDialogLabel("Carregando configurações");
+
+            string status = this.configs.loadConfigs();
+
+            if (status.Equals("OK"))
             {
-                loginErrorLabel.Invoke(new MethodInvoker(delegate { loginErrorLabel.Text = "Autenticando usuário"; }));
-            }
+                this.httpFunc = "LGN";
 
-            string user = username.Text;
-            string pass = password.Text;
+                if (loginErrorLabel.InvokeRequired)
+                {
+                    loginErrorLabel.Invoke(new MethodInvoker(delegate { loginErrorLabel.Text = "Autenticando usuário"; }));
+                }
 
-            byte[] keyBytes = Encoding.UTF8.GetBytes(this.hashKey);
-            byte[] passBytes = Encoding.UTF8.GetBytes(pass);
+                string user = username.Text;
+                string pass = password.Text;
 
-            var md5 = new HMACMD5(keyBytes);
-            byte[] hashedBytesPass = md5.ComputeHash(passBytes);
-            string md5Pass = BitConverter.ToString(hashedBytesPass).Replace("-", "").ToLower();
+                byte[] keyBytes = Encoding.UTF8.GetBytes(this.hashKey);
+                byte[] passBytes = Encoding.UTF8.GetBytes(pass);
 
-            Dictionary<string, string> fields = new Dictionary<string, string>();
-            fields.Add("FNC", this.httpFunc);
-            fields.Add("USR", user);
-            fields.Add("PWD", md5Pass);
+                var md5 = new HMACMD5(keyBytes);
+                byte[] hashedBytesPass = md5.ComputeHash(passBytes);
+                string md5Pass = BitConverter.ToString(hashedBytesPass).Replace("-", "").ToLower();
 
-            string json = this.generateJson(fields);
+                Dictionary<string, string> fields = new Dictionary<string, string>();
+                fields.Add("FNC", this.httpFunc);
+                fields.Add("USR", user);
+                fields.Add("PWD", md5Pass);
 
-            string randomKey = Cryptography.randomString(32);
-            string randomIV = Cryptography.randomString(32);
+                string json = this.generateJson(fields);
 
-            string encryptedData = Cryptography.encryptRJ256(json, randomKey, randomIV);
-            encryptedData += randomKey;
-            encryptedData += randomIV;
+                string randomKey = Cryptography.randomString(32);
+                string randomIV = Cryptography.randomString(32);
 
-            Dictionary<string, string> sendData = new Dictionary<string, string>();
-            sendData.Add("CTT", encryptedData);
+                string encryptedData = Cryptography.encryptRJ256(json, randomKey, randomIV);
+                encryptedData += randomKey;
+                encryptedData += randomIV;
 
-            //*** A URL de comunicação deve vir da base local
-            string webResponse = HttpComm.httpPostData(sendData, "http://www.odtsolucoes.com/odtged/api/consult/");
+                Dictionary<string, string> sendData = new Dictionary<string, string>();
+                sendData.Add("CTT", encryptedData);
 
-            if (webResponse.Length <= 6)
-            {
-               string message = HttpComm.treatHttpError(webResponse, this.httpFunc);
-               this.updateDialogLabel(message);
+                string webResponse = HttpComm.httpPostData(sendData, this.configs.consultGateway);
+
+                if (webResponse.Length <= 6)
+                {
+                    string message = HttpComm.treatHttpError(webResponse, this.httpFunc);
+                    this.updateDialogLabel(message);
+                }
+                else
+                {
+                    this.performLogin(webResponse);
+                }
             }
             else
             {
-                this.performLogin(webResponse);
+                this.updateDialogLabel(status);
             }
         }
-
+        //REMOVER
         private string generateJson(Dictionary<string, string> fields)
         {
             var entries = fields.Select(d =>
@@ -292,32 +302,41 @@ namespace ODTGed_Uploader
 
             if(this.userData.roles["write"])
             {
-                this.updateDialogLabel("Carregando contrato");
+                this.updateDialogLabel("Buscando configurações");
 
-                status = this.userData.contract.loadContract();
-                if(!status.Equals("OK"))
-                {
-                    if(status.Equals("NOTFOUND"))
-                    {
-                        this.updateDialogLabel("Não foi possível carregar os dados locais");
-                    }
-                    else if (status.Equals("ERROR"))
-                    {
-                        this.updateDialogLabel("Um erro ocorreu ao ler os dados do contrato");
-                    }
-                }
+                status = this.configs.getConfigs(this.userData.token);
 
                 if (status.Equals("OK"))
                 {
-                    this.updateDialogLabel("Buscando atualizações");
+                    this.updateDialogLabel("Carregando contrato");
 
-                    //*** A URL deve vir da base local
-                    status = this.userData.contract.getUpdates(this.userData.token, "http://www.odtsolucoes.com/odtged/api/consult/");
-
-                    if (status.Equals("OK"))
-                        this.showMainScreen();
+                    status = this.userData.contract.loadContract();
+                    if (!status.Equals("OK"))
+                    {
+                        if (status.Equals("NOTFOUND"))
+                        {
+                            this.updateDialogLabel("Impossível carregar os dados locais");
+                        }
+                        else if (status.Equals("ERROR"))
+                        {
+                            this.updateDialogLabel("Um erro ocorreu ao ler os dados do contrato");
+                        }
+                    }
                     else
-                        this.updateDialogLabel("");
+                    {
+                        this.updateDialogLabel("Buscando atualizações");
+
+                        status = this.userData.contract.getUpdates(this.userData.token, this.configs.consultGateway);
+
+                        if (status.Equals("OK"))
+                            this.showMainScreen();
+                        else
+                            this.updateDialogLabel("Servidor incomunicável");
+                    }
+                }
+                else
+                {
+                    this.updateDialogLabel(status);
                 }
             }
             else

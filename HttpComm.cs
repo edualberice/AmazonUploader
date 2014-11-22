@@ -38,6 +38,7 @@ namespace ODTGed_Uploader
         {
             string message = "";
 
+            //Login usando a base da web
             if (func.Equals("LGN"))
             {
                 if (webResponse.Equals("INV"))
@@ -47,6 +48,15 @@ namespace ODTGed_Uploader
                 else
                 {
                     message = "Erro na comunicação com o servidor(ERRO 2)";
+                }
+            }
+
+            //Buscando dados de configurações na web
+            if(func.Equals("CCF"))
+            {
+                if(webResponse.Equals(""))
+                {
+                    message = "Configurações não encontradas";
                 }
             }
 
