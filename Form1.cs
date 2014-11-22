@@ -24,12 +24,16 @@ namespace ODTGed_Uploader
         public Form1()
         {
             InitializeComponent();
-            loginErrorLabel.Text = "";
+            loginErrorLabel.Text = "Digite o usuário e a senha e clique em Acessar";
+            ShowInTaskbar = false;
+            this.SizeChanged += Form1_SizeChanged;
+            notifyIcon1.Text = "ODTDrive Uploader";
         }
         private bool keepAlive = true;
         private List<string> files = new List<string>();
         private Thread sendFiles = null;
         private Thread loginProcess = null;
+        private Thread saveConfigs = null;
         private string hashKey = "ODT SOLUÇÕES EmpresariAIS";
         private string httpFunc = "";
         private User userData = null;
@@ -194,7 +198,11 @@ namespace ODTGed_Uploader
 
         private void button2_Click(object sender, EventArgs e)
         {
-            //Configurações
+            startSending.Visible = false;
+            localFiles.Text = this.configs.sourceFolder;
+            localTarget.Text = this.configs.targetLocalFolder;
+            cloudTarget.Text = this.configs.targetCloudFolder;
+            configPanel.Visible = true;
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -368,6 +376,84 @@ namespace ODTGed_Uploader
             if(loginErrorLabel.InvokeRequired)
             {
                 loginErrorLabel.Invoke(new MethodInvoker(delegate { loginErrorLabel.Text = error; }));
+            }
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            configPanel.Visible = false;
+            startSending.Visible = true;
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            this.saveConfigs = new Thread(new ThreadStart(saveLocalConfigs));
+            this.saveConfigs.IsBackground = true;
+            this.saveConfigs.Start();
+        }
+
+        private void saveLocalConfigs() {
+            string bkpSourceFolder = this.configs.sourceFolder;
+            string bkpLocalTarget = this.configs.targetLocalFolder;
+            string bkpCloudTarget = this.configs.targetCloudFolder;
+
+            try
+            {
+                string cloudTargetFix = cloudTarget.Text;
+                if(cloudTarget.Text.Equals(""))
+                {
+                    cloudTargetFix = " ";
+                }
+                this.configs.sourceFolder = localFiles.Text;
+                this.configs.targetLocalFolder = localTarget.Text;
+                this.configs.targetCloudFolder = cloudTargetFix;
+
+                this.configs.saveConfigs();
+
+                this.updateDialogLabel("Configurações salvas");
+            }
+            catch(Exception e)
+            {
+                this.configs.sourceFolder = bkpSourceFolder;
+                this.configs.targetLocalFolder = bkpLocalTarget;
+                this.configs.targetCloudFolder = bkpCloudTarget;
+
+                this.updateDialogLabel("Erro ao salvar as configurações");
+            }
+
+            if (configPanel.InvokeRequired)
+            {
+                configPanel.Invoke(new MethodInvoker(delegate { configPanel.Visible = false; }));
+            }
+
+            if (startSending.InvokeRequired)
+            {
+                startSending.Invoke(new MethodInvoker(delegate { startSending.Visible = true; }));
+            }
+
+            this.saveConfigs.Join();
+        }
+
+        private void notifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            this.Show();
+            this.WindowState = FormWindowState.Normal;
+        }
+
+        private void Form1_SizeChanged(object sender, EventArgs e)
+        {
+            notifyIcon1.BalloonTipTitle = "ODTDrive Uploader";
+            notifyIcon1.BalloonTipText = "O software de envio continuará sendo executado. Para encerrar o processo, finalize o programa usando o botão para fechar.";
+
+            if (FormWindowState.Minimized == this.WindowState)
+            {
+                notifyIcon1.Visible = true;
+                notifyIcon1.ShowBalloonTip(500);
+                this.Hide();
+            }
+            else if (FormWindowState.Normal == this.WindowState)
+            {
+                notifyIcon1.Visible = false;
             }
         }
     }

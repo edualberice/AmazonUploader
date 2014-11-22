@@ -28,6 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.button1 = new System.Windows.Forms.Button();
             this.sendFileProgress = new System.Windows.Forms.ProgressBar();
             this.sendingPanel = new System.Windows.Forms.Panel();
@@ -43,19 +45,30 @@
             this.username = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.startSending = new System.Windows.Forms.Panel();
-            this.helloLabel = new System.Windows.Forms.Label();
             this.helloLabel2 = new System.Windows.Forms.Label();
+            this.helloLabel = new System.Windows.Forms.Label();
+            this.configPanel = new System.Windows.Forms.Panel();
+            this.label3 = new System.Windows.Forms.Label();
+            this.localFiles = new System.Windows.Forms.TextBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.localTarget = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.cloudTarget = new System.Windows.Forms.TextBox();
+            this.button5 = new System.Windows.Forms.Button();
+            this.button6 = new System.Windows.Forms.Button();
+            this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
             this.sendingPanel.SuspendLayout();
             this.stopSending.SuspendLayout();
             this.loginPanel.SuspendLayout();
             this.startSending.SuspendLayout();
+            this.configPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(11, 42);
+            this.button1.Location = new System.Drawing.Point(11, 69);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(264, 23);
+            this.button1.Size = new System.Drawing.Size(264, 33);
             this.button1.TabIndex = 0;
             this.button1.Text = "Enviar Arquivos";
             this.button1.UseVisualStyleBackColor = true;
@@ -89,9 +102,9 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(11, 71);
+            this.button2.Location = new System.Drawing.Point(11, 115);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(264, 23);
+            this.button2.Size = new System.Drawing.Size(264, 33);
             this.button2.TabIndex = 1;
             this.button2.Text = "Configurações";
             this.button2.UseVisualStyleBackColor = true;
@@ -126,14 +139,14 @@
             this.loginPanel.Controls.Add(this.label2);
             this.loginPanel.Location = new System.Drawing.Point(1, 52);
             this.loginPanel.Name = "loginPanel";
-            this.loginPanel.Size = new System.Drawing.Size(283, 97);
+            this.loginPanel.Size = new System.Drawing.Size(283, 156);
             this.loginPanel.TabIndex = 0;
             // 
             // loginErrorLabel
             // 
-            this.loginErrorLabel.Location = new System.Drawing.Point(43, 80);
+            this.loginErrorLabel.Location = new System.Drawing.Point(3, 115);
             this.loginErrorLabel.Name = "loginErrorLabel";
-            this.loginErrorLabel.Size = new System.Drawing.Size(208, 13);
+            this.loginErrorLabel.Size = new System.Drawing.Size(277, 33);
             this.loginErrorLabel.TabIndex = 5;
             this.loginErrorLabel.Text = "Erro ao logar. Usuário ou senha incorretos.";
             this.loginErrorLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -149,7 +162,7 @@
             // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(105, 53);
+            this.button4.Location = new System.Drawing.Point(100, 83);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(75, 23);
             this.button4.TabIndex = 4;
@@ -159,7 +172,7 @@
             // 
             // password
             // 
-            this.password.Location = new System.Drawing.Point(68, 30);
+            this.password.Location = new System.Drawing.Point(68, 40);
             this.password.Name = "password";
             this.password.Size = new System.Drawing.Size(202, 20);
             this.password.TabIndex = 3;
@@ -175,7 +188,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(21, 33);
+            this.label2.Location = new System.Drawing.Point(21, 43);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(41, 13);
             this.label2.TabIndex = 1;
@@ -189,34 +202,126 @@
             this.startSending.Controls.Add(this.button1);
             this.startSending.Location = new System.Drawing.Point(1, 52);
             this.startSending.Name = "startSending";
-            this.startSending.Size = new System.Drawing.Size(283, 97);
+            this.startSending.Size = new System.Drawing.Size(283, 156);
             this.startSending.TabIndex = 4;
             this.startSending.Visible = false;
-            // 
-            // helloLabel
-            // 
-            this.helloLabel.AutoSize = true;
-            this.helloLabel.Location = new System.Drawing.Point(16, 4);
-            this.helloLabel.Name = "helloLabel";
-            this.helloLabel.Size = new System.Drawing.Size(110, 13);
-            this.helloLabel.TabIndex = 5;
-            this.helloLabel.Text = "Olá Eduardo Alberice!";
             // 
             // helloLabel2
             // 
             this.helloLabel2.AutoSize = true;
-            this.helloLabel2.Location = new System.Drawing.Point(16, 22);
+            this.helloLabel2.Location = new System.Drawing.Point(16, 38);
             this.helloLabel2.Name = "helloLabel2";
             this.helloLabel2.Size = new System.Drawing.Size(192, 13);
             this.helloLabel2.TabIndex = 5;
             this.helloLabel2.Text = "Seja bem-vindo ao ODTDrive Uploader";
             // 
+            // helloLabel
+            // 
+            this.helloLabel.AutoSize = true;
+            this.helloLabel.Location = new System.Drawing.Point(16, 7);
+            this.helloLabel.Name = "helloLabel";
+            this.helloLabel.Size = new System.Drawing.Size(110, 13);
+            this.helloLabel.TabIndex = 5;
+            this.helloLabel.Text = "Olá Eduardo Alberice!";
+            // 
+            // configPanel
+            // 
+            this.configPanel.Controls.Add(this.button6);
+            this.configPanel.Controls.Add(this.button5);
+            this.configPanel.Controls.Add(this.cloudTarget);
+            this.configPanel.Controls.Add(this.label5);
+            this.configPanel.Controls.Add(this.localTarget);
+            this.configPanel.Controls.Add(this.label4);
+            this.configPanel.Controls.Add(this.localFiles);
+            this.configPanel.Controls.Add(this.label3);
+            this.configPanel.Location = new System.Drawing.Point(1, 52);
+            this.configPanel.Name = "configPanel";
+            this.configPanel.Size = new System.Drawing.Size(283, 156);
+            this.configPanel.TabIndex = 5;
+            this.configPanel.Visible = false;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(3, 5);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(99, 13);
+            this.label3.TabIndex = 6;
+            this.label3.Text = "Local dos arquivos:";
+            // 
+            // localFiles
+            // 
+            this.localFiles.Location = new System.Drawing.Point(6, 21);
+            this.localFiles.Name = "localFiles";
+            this.localFiles.Size = new System.Drawing.Size(274, 20);
+            this.localFiles.TabIndex = 7;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(3, 44);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(89, 13);
+            this.label4.TabIndex = 8;
+            this.label4.Text = "Pasta de destino:";
+            // 
+            // localTarget
+            // 
+            this.localTarget.Location = new System.Drawing.Point(6, 60);
+            this.localTarget.Name = "localTarget";
+            this.localTarget.Size = new System.Drawing.Size(274, 20);
+            this.localTarget.TabIndex = 9;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(3, 83);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(204, 13);
+            this.label5.TabIndex = 10;
+            this.label5.Text = "Destino na nuvem(em branco para a raiz):";
+            // 
+            // cloudTarget
+            // 
+            this.cloudTarget.Location = new System.Drawing.Point(6, 99);
+            this.cloudTarget.Name = "cloudTarget";
+            this.cloudTarget.Size = new System.Drawing.Size(274, 20);
+            this.cloudTarget.TabIndex = 11;
+            // 
+            // button5
+            // 
+            this.button5.Location = new System.Drawing.Point(141, 124);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(75, 23);
+            this.button5.TabIndex = 12;
+            this.button5.Text = "Salvar";
+            this.button5.UseVisualStyleBackColor = true;
+            this.button5.Click += new System.EventHandler(this.button5_Click);
+            // 
+            // button6
+            // 
+            this.button6.Location = new System.Drawing.Point(60, 124);
+            this.button6.Name = "button6";
+            this.button6.Size = new System.Drawing.Size(75, 23);
+            this.button6.TabIndex = 13;
+            this.button6.Text = "Voltar";
+            this.button6.UseVisualStyleBackColor = true;
+            this.button6.Click += new System.EventHandler(this.button6_Click);
+            // 
+            // notifyIcon1
+            // 
+            this.notifyIcon1.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon1.Icon")));
+            this.notifyIcon1.Text = "notifyIcon1";
+            this.notifyIcon1.Visible = true;
+            this.notifyIcon1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.notifyIcon1_MouseDoubleClick);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(288, 154);
+            this.ClientSize = new System.Drawing.Size(286, 211);
             this.Controls.Add(this.startSending);
+            this.Controls.Add(this.configPanel);
             this.Controls.Add(this.loginPanel);
             this.Controls.Add(this.sendingPanel);
             this.Controls.Add(this.stopSending);
@@ -229,6 +334,8 @@
             this.loginPanel.PerformLayout();
             this.startSending.ResumeLayout(false);
             this.startSending.PerformLayout();
+            this.configPanel.ResumeLayout(false);
+            this.configPanel.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -252,6 +359,16 @@
         private System.Windows.Forms.Panel startSending;
         private System.Windows.Forms.Label helloLabel2;
         private System.Windows.Forms.Label helloLabel;
+        private System.Windows.Forms.Panel configPanel;
+        private System.Windows.Forms.Button button5;
+        private System.Windows.Forms.TextBox cloudTarget;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.TextBox localTarget;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.TextBox localFiles;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Button button6;
+        private System.Windows.Forms.NotifyIcon notifyIcon1;
     }
 }
 

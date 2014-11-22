@@ -109,7 +109,7 @@ namespace ODTGed_Uploader
             return status;
         }
 
-        private void saveConfigs()
+        public void saveConfigs()
         {
             string connString = "Data Source=" + AppDomain.CurrentDomain.BaseDirectory + "odtdrive.db";
             using (SQLiteConnection conn = new SQLiteConnection(connString))
@@ -145,6 +145,8 @@ namespace ODTGed_Uploader
                 {
                     cmd.ExecuteNonQuery();
                 }
+
+                conn.Close();
             }
         }
     }
