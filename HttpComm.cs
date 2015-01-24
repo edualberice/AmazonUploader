@@ -79,14 +79,10 @@ namespace ODTGed_Uploader
         {
             string status = "OK";
 
-            string uploadedKey = "";
-
             file = file.Replace("\\", "#");
             string[] filePath = file.Split('#');
 
-            uploadedKey += key + "/" + filePath[filePath.Length - 1];
-
-            string json = JSON.encodeFileUploadLog("NUF", token, uploadedKey);
+            string json = JSON.encodeFileUploadLog("NUF", token, key, filePath[filePath.Length - 1]);
             string encryptKey = Cryptography.randomString(32);
             string encryptIv = Cryptography.randomString(32);
 

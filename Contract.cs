@@ -16,6 +16,7 @@ namespace ODTGed_Uploader
         public int encryption { get; set; }
         public int versioning { get; set; }
         public string bucketName { get; set; }
+        public string targetFolder { get; set; }
         public double lastModified { get; set; }
         public double lastModifiedWeb { get; set; }
 
@@ -42,13 +43,14 @@ namespace ODTGed_Uploader
                         saveStatement.Append("encryption = " + this.encryption + ", ");
                         saveStatement.Append("versioning = " + this.versioning + ", ");
                         saveStatement.Append("bucket = '" + this.bucketName + "', ");
-                        saveStatement.Append("last_modified = " + this.lastModified);
+                        saveStatement.Append("last_modified = " + this.lastModified + ", ");
+                        saveStatement.Append("target_folder = '" + this.targetFolder + "' ");
                         saveStatement.Append(" WHERE id = " + this.contractId);
                     }
                     else
                     {
-                        saveStatement.Append("INSERT INTO Contract (id, contract_name, disk_space, usage, encryption, versioning, bucket, last_modified) VALUES (");
-                        saveStatement.Append(this.contractId + ",'" + this.contractName + "', " + this.diskSpace + ", " + this.diskUsed + ", " + this.encryption + ", " + this.versioning + ", '" + this.bucketName + "', " + this.lastModified + ")");
+                        saveStatement.Append("INSERT INTO Contract (id, contract_name, disk_space, usage, encryption, versioning, bucket, last_modified, target_folder) VALUES (");
+                        saveStatement.Append(this.contractId + ",'" + this.contractName + "', " + this.diskSpace + ", " + this.diskUsed + ", " + this.encryption + ", " + this.versioning + ", '" + this.bucketName + "', " + this.lastModified + "', '" + this.targetFolder + "')");
                     }
                 }
 
@@ -118,6 +120,7 @@ namespace ODTGed_Uploader
                 this.encryption = contract.encryption;
                 this.versioning = contract.versioning;
                 this.bucketName = contract.bucketName;
+                this.targetFolder = contract.targetFolder;
                 this.lastModified = this.lastModifiedWeb;
 
                 this.saveContract();
@@ -155,7 +158,8 @@ namespace ODTGed_Uploader
                                 this.encryption = Convert.ToInt32(dr.GetValue(4));
                                 this.versioning = Convert.ToInt32(dr.GetValue(5));
                                 this.bucketName = dr.GetValue(6).ToString();
-                                this.lastModified = Convert.ToDouble(dr.GetValue(7));
+                                this.targetFolder = dr.GetValue(7).ToString();
+                                this.lastModified = Convert.ToDouble(dr.GetValue(8));
                             }
                         }
                     }

@@ -109,7 +109,7 @@ namespace ODTGed_Uploader
         private void sendFilesToBucket()
         {
             string bucket = this.userData.contract.bucketName;
-            string key = this.configs.targetCloudFolder.Equals(" ") ? "" : this.configs.targetCloudFolder;
+            string key = this.userData.contract.targetFolder.Equals(" ") ? "" : this.userData.contract.targetFolder+"/";
 
             decimal progress = 0;
             decimal filesSent = 0;
@@ -124,6 +124,9 @@ namespace ODTGed_Uploader
                     sendFileLabel.Invoke(new MethodInvoker(delegate { sendFileLabel.Text = "Enviando arquivo "+(filesSent+1)+" de "+totalFiles; }));
                 }
 
+                String[] fileData = file.Split('\\');
+                String fileName = fileData[(fileData.Length - 1)];
+
                 TransferUtility fileTransferUtility = new TransferUtility(new AmazonS3Client(Amazon.RegionEndpoint.SAEast1));
 
                 try
@@ -135,7 +138,7 @@ namespace ODTGed_Uploader
                         BucketName = bucket,
                         FilePath = file,
                         StorageClass = S3StorageClass.Standard,
-                        Key = key,
+                        Key = key+fileName,
                         CannedACL = S3CannedACL.Private,
                     };
 

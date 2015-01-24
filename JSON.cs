@@ -136,6 +136,10 @@ namespace ODTGed_Uploader
                 {
                     c.bucketName = info[1];
                 }
+                else if(info[0].Equals("TGT"))
+                {
+                    c.targetFolder = info[1];
+                }
             }
 
             return c;
@@ -171,9 +175,9 @@ namespace ODTGed_Uploader
             return c;
         }
 
-        public static string encodeFileUploadLog(string action, string token, string uploadedKey)
+        public static string encodeFileUploadLog(string action, string token, string key, string file)
         {
-            return "{\"FNC\":\""+action+"\", \"TKN\":\""+token+"\", \"KEY\":\""+uploadedKey+"\"}";
+            return "{\"FNC\":\""+action+"\", \"TKN\":\""+token+"\", \"KEY\":\""+key+"\", \"FLN\":\""+file+"\"}";
         }
 
         public static string decodeUploadLog(string data)
