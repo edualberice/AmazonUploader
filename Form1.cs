@@ -109,7 +109,8 @@ namespace ODTGed_Uploader
         private void sendFilesToBucket()
         {
             string bucket = this.userData.contract.bucketName;
-            string key = this.userData.contract.targetFolder.Equals(" ") ? "" : this.userData.contract.targetFolder+"/";
+            string targetFolder = this.configs.targetCloudFolder;
+            string key = targetFolder.Equals(" ") ? "" : targetFolder+"/";
 
             decimal progress = 0;
             decimal filesSent = 0;
